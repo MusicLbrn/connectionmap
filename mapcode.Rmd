@@ -1,0 +1,104 @@
+---
+title: "Connection_map"
+output: html_document
+date: "2025-06-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(downloader)
+library(geosphere)
+library(jpeg)
+library(ggplot2)
+library(dplyr)
+library(rworldmap)
+library(stringr)
+library(XML)
+library(grid)
+library(ggtext)
+library(tibble)
+```
+
+```{r}
+
+# A function to plot connections
+data_for_connection=function( dep_lon, dep_lat, arr_lon, arr_lat, group){
+  inter <- gcIntermediate(c(dep_lon, dep_lat), c(arr_lon, arr_lat), n=50, addStartEnd=TRUE, breakAtDateLine=F)             
+  inter=data.frame(inter)
+  inter$group=NA
+  diff_of_lon=abs(dep_lon) + abs(arr_lon)
+  if(diff_of_lon > 180){
+    inter$group[ which(inter$lon>=0)]=paste(group, "A",sep="")
+    inter$group[ which(inter$lon<0)]=paste(group, "B",sep="")
+  }else{
+    inter$group=group
+  }
+  return(inter)
+}
+```
+
+```{r}
+earth <- readJPEG("brightnights2.jpg", native = TRUE)
+earth <- rasterGrob(earth, interpolate = TRUE)
+
+```
+
+```{r}
+#combine data sets
+places = rbind.data.frame(orangeplaces, blueplaces, yellowplaces)
+```
+
+```{r}
+plot_this=data.frame()
+for(i in c(1:nrow(places))){
+    cfm=data_for_connection(places$homelon[i],places$homelat[i], places$travellon[i], places$travellat[i], i)
+    cfm$color = places$color[i]
+    plot_this=rbind(plot_this, cfm)
+} 
+plot_this$color=factor(plot_this$color, levels=c("#D74100","#2b72d7","#F4F50A"))
+
+```
+
+```{r}
+my_palette <- c("#D74100","#2b72d7","yellow")
+```
+
+
+```{r}
+par(mar=c(20,2,2,2) + 0.1)
+```
+
+
+```{r}
+p <- ggplot() +
+  annotation_custom(earth, xmin = -180, xmax = 180, ymin = -90, ymax = 90) +geom_line(data=plot_this, aes(x=lon, y=lat, group=group, colour=color, alpha=.8), size=0.8) +
+theme_void() +
+  scale_fill_manual(my_palette) +
+  theme(
+        legend.position="none",
+        panel.background = element_rect(fill = "black", colour = "black"), 
+        panel.spacing=unit(c(0,0,0,0), "null"),
+        plot.margin=grid::unit(c(.5,.2,.2,.2), "cm"),
+  ) +
+  ggplot2::annotate("text", x = -125, y = 12, hjust = 0, size = 13, label = paste("Professor Name - Global Voice Artistry:"), color = "white") +
+ ggplot2::annotate("text", x = -125, y = 7, hjust = 0, size = 11, label = paste( "Connecting Syracuse to the World."), color = "white") + 
+  ggplot2::annotate("text", x = -125, y = -18, hjust = 0, size = 8, label = str_wrap("This map illustrates the connections that Professor Name brings to Syracuse University. Each line indicates a scholarly connection indicated by a performance, directorial engagement, vocal coaching, leadership, learning, voice work, or other scholarly engagement. The color of the line indicates when the connection took place: green for before arriving at SU, blue for the period between 2010 and 2014, and orange for the period after 2014 that is currently under review."), color = "white", alpha = 0.5) +
+  ggplot2::annotate("text", x = -125, y = -45, hjust = 0, size = 8, label = paste("Amanda DuBose | Syracuse University Libraries | Research & Impact Team"), color = "white", alpha = 0.5) +
+  #ggplot2::annotate("text", x = 160, y = -51, hjust = 1, size = 7, label = paste("Cacedédi Air-Guimzu 2018"), color = "white", alpha = 0.5) +
+  xlim(-180,180) +
+  ylim(-60,80) +
+  scale_x_continuous(expand = c(0.006, 0.006)) +
+  coord_equal()
+```
+
+```{r}
+# Save at PNG
+ggsave("map16.png", width = 36, height = 15.22, units = "in", dpi = 120)
+```
+```{r}
+ggsave("map16.pdf", width = 11, height = 8.5, units = "in", dpi = 120)
+```
+
