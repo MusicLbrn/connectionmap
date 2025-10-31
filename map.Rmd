@@ -19,10 +19,10 @@ The preview shows you a rendered HTML copy of the contents of the editor. Conseq
 
 ```{r}
 v <- venn.diagram(
-  x=list(Celia_activities$Teaching, Celia_activities$`Creative Work`, Celia_activities$Teaching),
+  x=list(C_activities$Teaching, C_activities$`Creative Work`, C_activities$Teaching),
   category.names = c("Teaching", "Creative Work and Research", "Service"),
   na = "remove",
-  filename = 'celiavenn.png',
+  filename = 'cvenn.png',
   output = TRUE
   )
 
@@ -31,18 +31,18 @@ grid.draw(v)
 lapply(v, names)
 lapply(v, function(i) i$label)
 
-v[[5]]$label  <- paste(setdiff(Celia_activities$Teaching, Celia_activities$Teaching), collapse="\n")  
+v[[5]]$label  <- paste(setdiff(Celia_activities$Teaching, C_activities$Teaching), collapse="\n")  
 # in baa only
-v[[6]]$label <- paste(setdiff(Celia_activities$Teaching, foo)  , collapse="\n")  
+v[[6]]$label <- paste(setdiff(C_activities$Teaching, foo)  , collapse="\n")  
 # intesection
-v[[7]]$label <- paste(intersect(foo, Celia_activities$Teaching), collapse="\n")  
+v[[7]]$label <- paste(intersect(foo, C_activities$Teaching), collapse="\n")  
 ```
 
 celven \<- ggvenn(x, show_elements = T, label_sep = '\\n',
 
 fill_color = brewer.pal(name="Set2",n=3))
 
-pdf(file = "/Users/amdubose/OneDrive - Syracuse University/Celia Madeoy (VPA), Performing Arts Research Impact/vizualizations/venn.pdf",
+pdf(file = "/Users/amdubose/OneDrive - Syracuse University/Professor Name (VPA), Performing Arts Research Impact/vizualizations/venn.pdf",
 
 width = 8,
 
@@ -55,16 +55,16 @@ dev.off()
 ```{r}
 library(RColorBrewer)
 
-AA <- c(Celia_activities$Teaching)
-BB <- c(Celia_activities$`Creative Work`)
-CC <- c(Celia_activities$Service)
+AA <- c(C_activities$Teaching)
+BB <- c(C_activities$`Creative Work`)
+CC <- c(C_activities$Service)
 
 x<- list(Teaching=AA, "Creative Work"=BB, Service=CC)
 
 celven <- ggvenn(x, show_elements = T, label_sep = '\n',
        fill_color = brewer.pal(name="Set2",n=3))
 
-pdf(file = "/Users/amdubose/OneDrive - Syracuse University/Celia Madeoy (VPA), Performing Arts Research Impact/vizualizations/venn.pdf",
+pdf(file = "/Users/amdubose/OneDrive - Syracuse University/Professor (VPA), Performing Arts Research Impact/vizualizations/venn.pdf",
     width = 8,
     height = 6)
 
@@ -74,3 +74,4 @@ dev.off()
 ```
 
 \
+
